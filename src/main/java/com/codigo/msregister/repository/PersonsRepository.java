@@ -4,4 +4,7 @@ import com.codigo.msregister.entity.PersonsEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PersonsRepository extends JpaRepository<PersonsEntity, Integer> {
+    boolean existsByNumDocument(String numDocument);
+
+    boolean findByNumDocument(String numDocument);
 }

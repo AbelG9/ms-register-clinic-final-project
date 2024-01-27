@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+@NamedQuery(name = "PersonsEntity.findByNumDocument", query = "select p from PersonsEntity p where p.numDocument=:numDocument")
+@NamedQuery(name = "PersonsEntity.existsByNumDocument", query = "select case when count(p)> 0 then true else false end from PersonsEntity p where p.numDocument=:numDocument")
 @Entity
 @Getter
 @Setter

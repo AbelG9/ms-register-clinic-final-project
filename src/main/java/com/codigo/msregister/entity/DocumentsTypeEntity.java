@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+@NamedQuery(name = "DocumentsTypeEntity.findByCode", query = "select a from DocumentsTypeEntity a where a.code=:code")
+
 @Entity
 @Getter
 @Setter
