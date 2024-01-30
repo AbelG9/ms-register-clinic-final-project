@@ -2,13 +2,16 @@ package com.codigo.msregister.service.impl;
 
 import com.codigo.msregister.aggregates.request.RequestPersons;
 import com.codigo.msregister.aggregates.response.ResponseBase;
+import com.codigo.msregister.aggregates.response.ResponseReniec;
 import com.codigo.msregister.constants.Constants;
 import com.codigo.msregister.entity.DocumentsTypeEntity;
 import com.codigo.msregister.entity.PersonsEntity;
+import com.codigo.msregister.feignclient.ReniecClient;
 import com.codigo.msregister.repository.DocumentsTypeRepository;
 import com.codigo.msregister.repository.PersonsRepository;
 import com.codigo.msregister.service.PersonsService;
 import com.codigo.msregister.util.PersonsValidations;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -17,14 +20,38 @@ import java.util.Optional;
 
 @Service
 public class PersonsServiceImpl implements PersonsService {
+    private final ReniecClient reniecClient;
     private final PersonsRepository personsRepository;
     private final PersonsValidations personsValidations;
     private final DocumentsTypeRepository documentsTypeRepository;
 
-    public PersonsServiceImpl(PersonsRepository personsRepository, PersonsValidations personsValidations, DocumentsTypeRepository documentsTypeRepository) {
+    public PersonsServiceImpl(ReniecClient reniecClient, PersonsRepository personsRepository, PersonsValidations personsValidations, DocumentsTypeRepository documentsTypeRepository) {
+        this.reniecClient = reniecClient;
         this.personsRepository = personsRepository;
         this.personsValidations = personsValidations;
         this.documentsTypeRepository = documentsTypeRepository;
+    }
+
+    @Value("${token.api.reniec}")
+    private String tokenReniec;
+
+    @Value("${time.expiration.reniec.info}")
+    private String timeExpirationReniecInfo;
+
+    @Override
+    public ResponseBase getInfoReniec(String numero) {
+        ResponseReniec reniec = getExecutionReniec(numero);
+        if (reniec != null) {
+            return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, Optional.of(reniec));
+        } else {
+            return new ResponseBase(Constants.CODE_ERROR_DATA_NOT, Constants.MESSAGE_NON_DATA_RENIEC, Optional.empty());
+        }
+    }
+
+    private ResponseReniec getExecutionReniec(String numero) {
+        String authorization = "Bearer "+tokenReniec;
+        ResponseReniec reniec = reniecClient.getInfoReniec(numero, authorization);
+        return reniec;
     }
 
     @Override
@@ -111,9 +138,15 @@ public class PersonsServiceImpl implements PersonsService {
     }
 
     private PersonsEntity getPersons(RequestPersons requestPersons, PersonsEntity personsEntity, boolean isUpdate) {
-        personsEntity.setNumDocument(requestPersons.getNumDocument());
-        personsEntity.setName("aBEL");
-        personsEntity.setLastname("gUEV");
+        ResponseReniec reniec = getExecutionReniec(requestPersons.getNumDocument());
+        if (reniec != null) {
+            personsEntity.setName(reniec.getNombres());
+            personsEntity.setLastname(reniec.getApellidoMaterno() + " " + reniec.getApellidoMaterno());
+            personsEntity.setNumDocument(reniec.getNumeroDocumento());
+        } else {
+            return null;
+        }
+
         personsEntity.setEmail(requestPersons.getEmail());
         personsEntity.setPhoneNumber(requestPersons.getPhoneNumber());
         personsEntity.setGender(requestPersons.getGender());
