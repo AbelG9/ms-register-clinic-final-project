@@ -4,7 +4,7 @@ import com.codigo.msregister.aggregates.request.RequestPersons;
 import com.codigo.msregister.aggregates.response.ResponseBase;
 
 public interface PersonsService {
-    public ResponseBase getInfoReniec(String numero);
+    ResponseBase getInfoReniec(String numero);
     ResponseBase createPersons(RequestPersons requestPersons);
     ResponseBase findOnePersonById(int id);
     ResponseBase findOnePersonByDocument(String doc);

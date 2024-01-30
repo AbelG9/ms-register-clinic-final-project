@@ -30,7 +30,7 @@ public class PersonsController {
     }
 
     @GetMapping
-    public ResponseBase findAll() {
+    public ResponseBase findAllPersons() {
         return personsService.findAllPersons();
     }
 

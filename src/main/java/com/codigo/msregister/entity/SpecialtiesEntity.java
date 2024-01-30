@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+@NamedQuery(name = "SpecialtiesEntity.existsSpecialtyByName", query = "select case when count(s)> 0 then true else false end from SpecialtiesEntity s where s.name=:name")
+@NamedQuery(name = "SpecialtiesEntity.existsSpecialtyByCode", query = "select case when count(s)> 0 then true else false end from SpecialtiesEntity s where s.code=:code")
 @Entity
 @Getter
 @Setter
@@ -20,6 +22,8 @@ public class SpecialtiesEntity extends Audit {
     private String name;
     @Column(name = "description", length = 200, nullable = true)
     private String description;
+    @Column(name = "code", length = 45, nullable = false)
+    private String code;
     @Column(name = "status", nullable = false)
     private int status;
 }

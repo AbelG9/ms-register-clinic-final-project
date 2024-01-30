@@ -11,6 +11,7 @@ import com.codigo.msregister.repository.DocumentsTypeRepository;
 import com.codigo.msregister.repository.PersonsRepository;
 import com.codigo.msregister.service.PersonsService;
 import com.codigo.msregister.util.PersonsValidations;
+import com.codigo.msregister.util.Util;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -50,8 +51,7 @@ public class PersonsServiceImpl implements PersonsService {
 
     private ResponseReniec getExecutionReniec(String numero) {
         String authorization = "Bearer "+tokenReniec;
-        ResponseReniec reniec = reniecClient.getInfoReniec(numero, authorization);
-        return reniec;
+        return reniecClient.getInfoReniec(numero, authorization);
     }
 
     @Override
@@ -129,8 +129,7 @@ public class PersonsServiceImpl implements PersonsService {
 
     private PersonsEntity getPersonsEntity(RequestPersons requestPersons) {
         PersonsEntity personsEntity = new PersonsEntity();
-        getPersons(requestPersons, personsEntity, false);
-        return personsEntity;
+        return getPersons(requestPersons, personsEntity, false);
     }
 
     private PersonsEntity getPersonsEntityUpdate(RequestPersons requestPersons, PersonsEntity personsEntity) {
@@ -155,26 +154,22 @@ public class PersonsServiceImpl implements PersonsService {
 
         if (isUpdate) {
             personsEntity.setUserModified(Constants.AUDIT_ADMIN);
-            personsEntity.setDateModified(getActualTimestamp());
+            personsEntity.setDateModified(Util.getActualTimestamp());
         } else {
             personsEntity.setUserCreated(Constants.AUDIT_ADMIN);
-            personsEntity.setDateCreated(getActualTimestamp());
+            personsEntity.setDateCreated(Util.getActualTimestamp());
         }
         return personsEntity;
     }
 
     private PersonsEntity getPersonsEntityDeleted(PersonsEntity personsEntity) {
         personsEntity.setStatus(Constants.STATUS_INACTIVE);
-        personsEntity.setDateDeleted(getActualTimestamp());
+        personsEntity.setDateDeleted(Util.getActualTimestamp());
         personsEntity.setUserDeleted(Constants.AUDIT_ADMIN);
         return personsEntity;
     }
 
     private DocumentsTypeEntity getDocumentsTypeEntity(RequestPersons requestPersons) {
         return documentsTypeRepository.findById(requestPersons.getDocumentTypeId()).orElse(null);
-    }
-
-    private Timestamp getActualTimestamp() {
-        return new Timestamp(System.currentTimeMillis());
     }
 }

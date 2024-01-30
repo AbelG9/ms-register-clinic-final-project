@@ -25,20 +25,13 @@ public class PersonsValidations {
         if (requestPersons.getDocumentTypeId() != documentsTypeEntity.getIdDocumentsType() || requestPersons.getNumDocument().length() != Constants.LENGTH_DNI) {
             return false;
         }
-        if (isNullOrEmpty(requestPersons.getEmail()) || isNullOrEmpty(requestPersons.getPhoneNumber())) {
+        if (Util.isNullOrEmpty(requestPersons.getEmail()) || Util.isNullOrEmpty(requestPersons.getPhoneNumber())) {
             return false;
         }
-        if (!isUpdate) {
-            return !existsPerson(requestPersons.getNumDocument());
-        }
-        return true;
+        return isUpdate || !existsPerson(requestPersons.getNumDocument());
     }
 
     public boolean existsPerson(String numDocument) {
         return personsRepository.existsByNumDocument(numDocument);
-    }
-
-    public boolean isNullOrEmpty(String data) {
-        return data == null || data.isEmpty();
     }
 }
