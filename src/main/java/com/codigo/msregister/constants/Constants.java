@@ -18,6 +18,7 @@ public class Constants {
     public static final String MESSAGE_ERROR_DATA_NOT_VALID="Error: Durante las validaciones de los Datos";
     public static final String MESSAGE_ZERO_ROWS="No existe Registros en la Base de Datos";
     public static final String MESSAGE_ERROR_NOT_UPDATE_PERSONS ="Error: No se ejecuto la actualización, Persona no Existe";
+    public static final String MESSAGE_ERROR_NOT_DELETE_PERSONS ="Error: No se ejecuto el eliminado, Persona no Existe";
     public static final String MESSAGE_NON_DATA_RENIEC="No existe Registros en el API de RENIEC";
 
     //VALIDATIONS LENGTHS

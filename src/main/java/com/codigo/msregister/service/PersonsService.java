@@ -5,7 +5,8 @@ import com.codigo.msregister.aggregates.response.ResponseBase;
 
 public interface PersonsService {
     ResponseBase createPersons(RequestPersons requestPersons);
-    ResponseBase findOnePerson(int id);
+    ResponseBase findOnePersonById(int id);
+    ResponseBase findOnePersonByDocument(String doc);
     ResponseBase findAllPersons();
     ResponseBase updatePerson(int id, RequestPersons requestPersons);
     ResponseBase deletePerson(int id);

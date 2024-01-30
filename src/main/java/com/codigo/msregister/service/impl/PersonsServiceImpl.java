@@ -12,6 +12,7 @@ import com.codigo.msregister.util.PersonsValidations;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,7 +29,7 @@ public class PersonsServiceImpl implements PersonsService {
 
     @Override
     public ResponseBase createPersons(RequestPersons requestPersons) {
-        boolean validatePersons = personsValidations.validateInput(requestPersons);
+        boolean validatePersons = personsValidations.validateInput(requestPersons, false);
         if (validatePersons) {
             PersonsEntity personsEntity = getPersonsEntity(requestPersons);
             personsRepository.save(personsEntity);
@@ -39,29 +40,74 @@ public class PersonsServiceImpl implements PersonsService {
     }
 
     @Override
-    public ResponseBase findOnePerson(int id) {
-        return null;
+    public ResponseBase findOnePersonById(int id) {
+        Optional<PersonsEntity> person = personsRepository.findById(id);
+        if (person.isPresent()) {
+            return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, person);
+        } else {
+            return new ResponseBase(Constants.CODE_ERROR_DATA_NOT, Constants.MESSAGE_ZERO_ROWS, Optional.empty());
+        }
+    }
+
+    @Override
+    public ResponseBase findOnePersonByDocument(String doc) {
+        Optional<PersonsEntity> person = personsRepository.findByNumDocument(doc);
+        if (person.isPresent()) {
+            return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, person);
+        } else {
+            return new ResponseBase(Constants.CODE_ERROR_DATA_NOT, Constants.MESSAGE_ZERO_ROWS, Optional.empty());
+        }
     }
 
     @Override
     public ResponseBase findAllPersons() {
-        return null;
+        List<PersonsEntity> persons = personsRepository.findAll();
+        if (!persons.isEmpty()) {
+            return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, Optional.of(persons));
+        } else {
+            return new ResponseBase(Constants.CODE_ERROR_DATA_NOT, Constants.MESSAGE_ZERO_ROWS, Optional.empty());
+        }
     }
 
     @Override
     public ResponseBase updatePerson(int id, RequestPersons requestPersons) {
-        return null;
+        boolean existsPerson = personsRepository.existsById(id);
+        if (existsPerson) {
+            Optional<PersonsEntity> persons = personsRepository.findById(id);
+            boolean validationEntity = personsValidations.validateInput(requestPersons, true);
+            if (validationEntity) {
+                PersonsEntity personsUpdate = getPersonsEntityUpdate(requestPersons, persons.get());
+                personsRepository.save(personsUpdate);
+                return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, Optional.of(personsUpdate));
+            } else {
+                return new ResponseBase(Constants.CODE_ERROR_DATA_INPUT, Constants.MESSAGE_ERROR_DATA_NOT_VALID, Optional.empty());
+            }
+        } else {
+            return new ResponseBase(Constants.CODE_ERROR_DATA_NOT, Constants.MESSAGE_ERROR_NOT_UPDATE_PERSONS, Optional.empty());
+        }
     }
 
     @Override
     public ResponseBase deletePerson(int id) {
-        return null;
+        boolean existsPerson = personsRepository.existsById(id);
+        if (existsPerson) {
+            Optional<PersonsEntity> persons = personsRepository.findById(id);
+            PersonsEntity personsEntity = getPersonsEntityDeleted(persons.get());
+            personsRepository.save(personsEntity);
+            return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, Optional.of(personsEntity));
+        } else {
+            return new ResponseBase(Constants.CODE_ERROR_EXIST, Constants.MESSAGE_ERROR_NOT_DELETE_PERSONS, Optional.empty());
+        }
     }
 
     private PersonsEntity getPersonsEntity(RequestPersons requestPersons) {
         PersonsEntity personsEntity = new PersonsEntity();
         getPersons(requestPersons, personsEntity, false);
         return personsEntity;
+    }
+
+    private PersonsEntity getPersonsEntityUpdate(RequestPersons requestPersons, PersonsEntity personsEntity) {
+        return getPersons(requestPersons, personsEntity, true);
     }
 
     private PersonsEntity getPersons(RequestPersons requestPersons, PersonsEntity personsEntity, boolean isUpdate) {
@@ -81,6 +127,13 @@ public class PersonsServiceImpl implements PersonsService {
             personsEntity.setUserCreated(Constants.AUDIT_ADMIN);
             personsEntity.setDateCreated(getActualTimestamp());
         }
+        return personsEntity;
+    }
+
+    private PersonsEntity getPersonsEntityDeleted(PersonsEntity personsEntity) {
+        personsEntity.setStatus(Constants.STATUS_INACTIVE);
+        personsEntity.setDateDeleted(getActualTimestamp());
+        personsEntity.setUserDeleted(Constants.AUDIT_ADMIN);
         return personsEntity;
     }
 

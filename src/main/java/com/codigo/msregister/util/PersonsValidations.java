@@ -17,7 +17,7 @@ public class PersonsValidations {
         this.documentsTypeRepository = documentsTypeRepository;
     }
 
-    public boolean validateInput(RequestPersons requestPersons) {
+    public boolean validateInput(RequestPersons requestPersons, boolean isUpdate) {
         if (requestPersons == null) {
             return false;
         }
@@ -25,8 +25,11 @@ public class PersonsValidations {
         if (requestPersons.getDocumentTypeId() != documentsTypeEntity.getIdDocumentsType() || requestPersons.getNumDocument().length() != Constants.LENGTH_DNI) {
             return false;
         }
-        if (isNullOrEmpty(requestPersons.getEmail()) || isNullOrEmpty(requestPersons.getPhoneNumber()) || existsPerson(requestPersons.getNumDocument())) {
+        if (isNullOrEmpty(requestPersons.getEmail()) || isNullOrEmpty(requestPersons.getPhoneNumber())) {
             return false;
+        }
+        if (!isUpdate) {
+            return !existsPerson(requestPersons.getNumDocument());
         }
         return true;
     }
