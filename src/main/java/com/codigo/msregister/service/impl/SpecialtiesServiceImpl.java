@@ -108,7 +108,6 @@ public class SpecialtiesServiceImpl implements SpecialtiesService {
             specialtiesEntity.setUserCreated(Constants.AUDIT_ADMIN);
             specialtiesEntity.setDateCreated(Util.getActualTimestamp());
         }
-
         return specialtiesEntity;
     }
 
