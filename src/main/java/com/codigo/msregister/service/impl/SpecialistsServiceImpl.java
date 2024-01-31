@@ -11,10 +11,8 @@ import com.codigo.msregister.repository.SpecialistsRepository;
 import com.codigo.msregister.repository.SpecialtiesRepository;
 import com.codigo.msregister.service.SpecialistsService;
 import com.codigo.msregister.util.SpecialistsValidations;
-import com.codigo.msregister.util.SpecialtiesValidations;
 import com.codigo.msregister.util.Util;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
