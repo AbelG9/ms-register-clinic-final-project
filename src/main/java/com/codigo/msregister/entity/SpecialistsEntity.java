@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+@NamedQuery(name = "SpecialistsEntity.existsSpecialistsByCmpNumber", query = "select case when count(s)> 0 then true else false end from SpecialistsEntity s where s.cmpNumber=:cmpNumber")
 @Entity
 @Getter
 @Setter
