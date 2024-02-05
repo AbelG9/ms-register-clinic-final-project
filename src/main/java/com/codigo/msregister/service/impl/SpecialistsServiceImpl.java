@@ -1,8 +1,9 @@
 package com.codigo.msregister.service.impl;
 
+import com.codigo.appointmentslibrary.constants.Constants;
+import com.codigo.appointmentslibrary.response.ResponseBase;
+import com.codigo.appointmentslibrary.util.Util;
 import com.codigo.msregister.aggregates.request.RequestSpecialists;
-import com.codigo.msregister.aggregates.response.ResponseBase;
-import com.codigo.msregister.constants.Constants;
 import com.codigo.msregister.entity.PersonsEntity;
 import com.codigo.msregister.entity.SpecialistsEntity;
 import com.codigo.msregister.entity.SpecialtiesEntity;
@@ -11,7 +12,6 @@ import com.codigo.msregister.repository.SpecialistsRepository;
 import com.codigo.msregister.repository.SpecialtiesRepository;
 import com.codigo.msregister.service.SpecialistsService;
 import com.codigo.msregister.util.SpecialistsValidations;
-import com.codigo.msregister.util.Util;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;

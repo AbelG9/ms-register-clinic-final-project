@@ -1,5 +1,6 @@
 package com.codigo.msregister.util;
 
+import com.codigo.appointmentslibrary.util.Util;
 import com.codigo.msregister.aggregates.request.RequestSpecialists;
 import com.codigo.msregister.repository.SpecialistsRepository;
 import org.springframework.stereotype.Component;

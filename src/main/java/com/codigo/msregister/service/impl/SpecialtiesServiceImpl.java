@@ -1,13 +1,13 @@
 package com.codigo.msregister.service.impl;
 
+import com.codigo.appointmentslibrary.constants.Constants;
+import com.codigo.appointmentslibrary.response.ResponseBase;
+import com.codigo.appointmentslibrary.util.Util;
 import com.codigo.msregister.aggregates.request.RequestSpecialties;
-import com.codigo.msregister.aggregates.response.ResponseBase;
-import com.codigo.msregister.constants.Constants;
 import com.codigo.msregister.entity.SpecialtiesEntity;
 import com.codigo.msregister.repository.SpecialtiesRepository;
 import com.codigo.msregister.service.SpecialtiesService;
 import com.codigo.msregister.util.SpecialtiesValidations;
-import com.codigo.msregister.util.Util;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,7 +57,7 @@ public class SpecialtiesServiceImpl implements SpecialtiesService {
 
     @Override
     public ResponseBase updateSpecialty(int id, RequestSpecialties requestSpecialties) {
-        boolean existsSpecialty = specialtiesRepository.existsSpecialtyByName(requestSpecialties.getName());
+        boolean existsSpecialty = specialtiesRepository.existsById(id);
         if (existsSpecialty) {
             Optional<SpecialtiesEntity> specialties = specialtiesRepository.findById(id);
             boolean validationEntity = specialtiesValidations.validateInput(requestSpecialties, true);

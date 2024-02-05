@@ -1,7 +1,7 @@
 package com.codigo.msregister.controller;
 
+import com.codigo.appointmentslibrary.response.ResponseBase;
 import com.codigo.msregister.aggregates.request.RequestSpecialists;
-import com.codigo.msregister.aggregates.response.ResponseBase;
 import com.codigo.msregister.service.SpecialistsService;
 import org.springframework.web.bind.annotation.*;
 
