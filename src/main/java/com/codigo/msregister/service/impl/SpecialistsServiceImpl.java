@@ -1,5 +1,6 @@
 package com.codigo.msregister.service.impl;
 
+import com.codigo.appointmentslibrary.config.RedisService;
 import com.codigo.appointmentslibrary.constants.Constants;
 import com.codigo.appointmentslibrary.response.ResponseBase;
 import com.codigo.appointmentslibrary.util.Util;
@@ -22,12 +23,14 @@ public class SpecialistsServiceImpl implements SpecialistsService {
     private final SpecialtiesRepository specialtiesRepository;
     private final PersonsRepository personsRepository;
     private final SpecialistsValidations specialistsValidations;
+    private final RedisService redisService;
 
-    public SpecialistsServiceImpl(SpecialistsRepository specialistsRepository, SpecialtiesRepository specialtiesRepository, PersonsRepository personsRepository, SpecialistsValidations specialistsValidations) {
+    public SpecialistsServiceImpl(SpecialistsRepository specialistsRepository, SpecialtiesRepository specialtiesRepository, PersonsRepository personsRepository, SpecialistsValidations specialistsValidations, RedisService redisService) {
         this.specialistsRepository = specialistsRepository;
         this.specialtiesRepository = specialtiesRepository;
         this.personsRepository = personsRepository;
         this.specialistsValidations = specialistsValidations;
+        this.redisService = redisService;
     }
 
     @Override
@@ -43,11 +46,19 @@ public class SpecialistsServiceImpl implements SpecialistsService {
     }
     @Override
     public ResponseBase findOneSpecialistById(int id) {
-        Optional<SpecialistsEntity> specialist = specialistsRepository.findById(id);
-        if (specialist.isPresent()) {
-            return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, specialist);
+        String redisCache = redisService.getValueFromCache(Constants.REDIS_KEY_INFO_SPECIALISTS+id);
+        if(redisCache != null){
+            SpecialistsEntity specialist = Util.convertFromJson(redisCache, SpecialistsEntity.class);
+            return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, Optional.of(specialist));
         } else {
-            return new ResponseBase(Constants.CODE_ERROR_DATA_NOT, Constants.MESSAGE_ZERO_ROWS, Optional.empty());
+            Optional<SpecialistsEntity> specialistEntity = specialistsRepository.findById(id);
+            if (specialistEntity.isPresent()) {
+                String redisData = Util.convertToJsonEntity(specialistEntity.get());
+                redisService.saveInCache(Constants.REDIS_KEY_INFO_SPECIALISTS+id,redisData);
+                return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, specialistEntity);
+            } else {
+                return new ResponseBase(Constants.CODE_ERROR_DATA_NOT, Constants.MESSAGE_ZERO_ROWS, Optional.empty());
+            }
         }
     }
 

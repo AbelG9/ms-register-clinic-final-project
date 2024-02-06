@@ -1,5 +1,6 @@
 package com.codigo.msregister.service.impl;
 
+import com.codigo.appointmentslibrary.config.RedisService;
 import com.codigo.appointmentslibrary.constants.Constants;
 import com.codigo.appointmentslibrary.response.ResponseBase;
 import com.codigo.appointmentslibrary.util.Util;
@@ -17,10 +18,12 @@ import java.util.Optional;
 public class SpecialtiesServiceImpl implements SpecialtiesService {
     private final SpecialtiesRepository specialtiesRepository;
     private final SpecialtiesValidations specialtiesValidations;
+    private final RedisService redisService;
 
-    public SpecialtiesServiceImpl(SpecialtiesRepository specialtiesRepository, SpecialtiesValidations specialtiesValidations) {
+    public SpecialtiesServiceImpl(SpecialtiesRepository specialtiesRepository, SpecialtiesValidations specialtiesValidations, RedisService redisService) {
         this.specialtiesRepository = specialtiesRepository;
         this.specialtiesValidations = specialtiesValidations;
+        this.redisService = redisService;
     }
 
     @Override
@@ -37,11 +40,19 @@ public class SpecialtiesServiceImpl implements SpecialtiesService {
 
     @Override
     public ResponseBase findOneSpecialtyById(int id) {
-        Optional<SpecialtiesEntity> specialty = specialtiesRepository.findById(id);
-        if (specialty.isPresent()) {
-            return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, Optional.of(specialty));
+        String redisCache = redisService.getValueFromCache(Constants.REDIS_KEY_INFO_SPECIALTIES+id);
+        if(redisCache != null){
+            SpecialtiesEntity specialtiesEntity = Util.convertFromJson(redisCache, SpecialtiesEntity.class);
+            return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, Optional.of(specialtiesEntity));
         } else {
-            return new ResponseBase(Constants.CODE_ERROR_DATA_NOT, Constants.MESSAGE_ZERO_ROWS, Optional.empty());
+            Optional<SpecialtiesEntity> specialtyEntity = specialtiesRepository.findById(id);
+            if (specialtyEntity.isPresent()) {
+                String redisData = Util.convertToJsonEntity(specialtyEntity.get());
+                redisService.saveInCache(Constants.REDIS_KEY_INFO_SPECIALTIES+id,redisData);
+                return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, Optional.of(specialtyEntity));
+            } else {
+                return new ResponseBase(Constants.CODE_ERROR_DATA_NOT, Constants.MESSAGE_ZERO_ROWS, Optional.empty());
+            }
         }
     }
 
