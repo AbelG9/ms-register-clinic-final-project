@@ -49,7 +49,7 @@ public class SpecialtiesServiceImpl implements SpecialtiesService {
             if (specialtyEntity.isPresent()) {
                 String redisData = Util.convertToJsonEntity(specialtyEntity.get());
                 redisService.saveInCache(Constants.REDIS_KEY_INFO_SPECIALTIES+id,redisData);
-                return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, Optional.of(specialtyEntity));
+                return new ResponseBase(Constants.CODE_SUCCESS, Constants.MESSAGE_SUCCESS, specialtyEntity);
             } else {
                 return new ResponseBase(Constants.CODE_ERROR_DATA_NOT, Constants.MESSAGE_ZERO_ROWS, Optional.empty());
             }

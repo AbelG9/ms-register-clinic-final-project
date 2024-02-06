@@ -3,7 +3,9 @@ package com.codigo.msregister.entity;
 import com.codigo.appointmentslibrary.model.Audit;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @NamedQuery(name = "SpecialtiesEntity.existsSpecialtyByName", query = "select case when count(s)> 0 then true else false end from SpecialtiesEntity s where s.name=:name")
@@ -12,6 +14,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "specialties")
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SpecialtiesEntity extends Audit {
     @Id
